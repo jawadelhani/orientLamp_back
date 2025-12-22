@@ -70,17 +70,3 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 }
-
-// Example protected endpoint
-@RestController
-@RequestMapping("/api/user")
-@RequiredArgsConstructor
-class UserController {
-
-    @GetMapping("/profile")
-    public ResponseEntity<Map<String, String>> getProfile() {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "This is a protected endpoint");
-        return ResponseEntity.ok(response);
-    }
-}

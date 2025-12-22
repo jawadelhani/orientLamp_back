@@ -1,6 +1,5 @@
 package com.example.orientlamp_back.entity;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -18,9 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")
-})
+@Table(name = "`user`")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,41 +26,43 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @NotBlank(message = "Name is required")
-    @Size(min = 2, max = 50)
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "id_user")
+    private Long idUser;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     @Column(nullable = false, unique = true)
     private String email;
 
+    @NotBlank(message = "Username is required")
+    @Size(min = 2, max = 100)
+    @Column(nullable = false, unique = true)
+    private String username;
+
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private Role role = Role.USER;
+    @NotBlank(message = "User type is required")
+    @Column(name = "user_type", nullable = false, length = 50)
+    private String userType;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean enabled = false;
+    @Column(name = "age")
+    private Integer age;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean accountNonLocked = true;
+    @Column(name = "current_study_level", length = 100)
+    private String currentStudyLevel;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    // Relationship with Preferences (One-to-One)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Preference preferences;
 
     @PrePersist
     protected void onCreate() {
@@ -79,7 +78,7 @@ public class User implements UserDetails {
     // UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + userType.toUpperCase()));
     }
 
     @Override
@@ -94,7 +93,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return accountNonLocked;
+        return true;
     }
 
     @Override
@@ -104,12 +103,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return true;
     }
-}
-
-// Role Enum
-enum Role {
-    USER,
-    ADMIN
 }

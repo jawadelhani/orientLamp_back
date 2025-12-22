@@ -1,3 +1,4 @@
+// UserRepository.java
 package com.example.orientlamp_back.repository;
 
 import com.example.orientlamp_back.entity.User;
@@ -9,5 +10,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
-    Boolean existsByEmail(String email);
+    Optional<User> findByUsername(String username);
+    boolean existsByEmail(String email);
+    boolean existsByUsername(String username);
 }
