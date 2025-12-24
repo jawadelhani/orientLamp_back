@@ -132,6 +132,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>me.paulschwarz</groupId>
+            <artifactId>spring-dotenv</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -145,12 +151,6 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <configuration>
-                    <url>jdbc:mysql://localhost:3306/orientlamp_db?createDatabaseIfNotExist=true</url>
-                    <user>root</user>
-                    <password>1234</password>
-                    <cleanDisabled>false</cleanDisabled>
-                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>com.mysql</groupId>
