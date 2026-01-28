@@ -3,22 +3,31 @@ package com.example.orientlamp_back.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "critere")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Critere {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "filiere_id", nullable = false)
-    private Long id;
+    private Long filiereId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "filiere_id")
+    private Filiere filiere;
 
     @Size(max = 20)
     @NotNull
@@ -73,4 +82,14 @@ public class Critere {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now();
+        updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
 }

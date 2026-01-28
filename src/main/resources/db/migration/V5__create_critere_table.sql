@@ -16,3 +16,7 @@ CREATE TABLE critere (
                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+ALTER TABLE critere
+    ADD CONSTRAINT fk_critere_filiere
+        FOREIGN KEY (filiere_id) REFERENCES filiere(id) ON DELETE CASCADE;
+

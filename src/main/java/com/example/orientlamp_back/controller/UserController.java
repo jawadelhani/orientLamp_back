@@ -2,84 +2,79 @@ package com.example.orientlamp_back.controller;
 
 import com.example.orientlamp_back.dto.UserRequestDTO;
 import com.example.orientlamp_back.dto.UserResponseDTO;
-import com.example.orientlamp_back.entity.User;
-import com.example.orientlamp_back.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/users")
-@RequiredArgsConstructor
-public class UserController {
+@Tag(name = "User", description = "User management APIs")
+@RequestMapping("/api/users")
+public interface UserController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-
+    @Operation(summary = "Create a new user")
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO requestDTO) {
-        // Check if email already exists
-        if (userRepository.existsByEmail(requestDTO.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(null); // Or throw custom exception
-        }
+    ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO requestDTO);
 
-        // Check if username already exists
-        if (userRepository.existsByUsername(requestDTO.getUsername())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(null); // Or throw custom exception
-        }
+    @Operation(summary = "Update an existing user")
+    @PutMapping("/{idUser}")
+    ResponseEntity<UserResponseDTO> updateUser(
+            @PathVariable Long idUser,
+            @Valid @RequestBody UserRequestDTO requestDTO);
 
-        // Create new user
-        User user = User.builder()
-                .email(requestDTO.getEmail())
-                .username(requestDTO.getUsername())
-                .password(passwordEncoder.encode(requestDTO.getPassword()))
-                .userType(requestDTO.getUserType())
-                .age(requestDTO.getAge())
-                .currentStudyLevel(requestDTO.getCurrentStudyLevel())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+    @Operation(summary = "Delete a user")
+    @DeleteMapping("/{idUser}")
+    ResponseEntity<Void> deleteUser(@PathVariable Long idUser);
 
-        User savedUser = userRepository.save(user);
+    @Operation(summary = "Get user by ID")
+    @GetMapping("/{idUser}")
+    ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long idUser);
 
-        return new ResponseEntity<>(convertToDTO(savedUser), HttpStatus.CREATED);
-    }
+    @Operation(summary = "Get user by email")
+    @GetMapping("/email/{email}")
+    ResponseEntity<UserResponseDTO> getUserByEmail(@PathVariable String email);
 
+    @Operation(summary = "Get user by username")
+    @GetMapping("/username/{username}")
+    ResponseEntity<UserResponseDTO> getUserByUsername(@PathVariable String username);
+
+    @Operation(summary = "Get all users")
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        List<UserResponseDTO> userDTOs = users.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userDTOs);
-    }
+    ResponseEntity<List<UserResponseDTO>> getAllUsers();
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-        return ResponseEntity.ok(convertToDTO(user));
-    }
+    @Operation(summary = "Get users by user type")
+    @GetMapping("/type/{userType}")
+    ResponseEntity<List<UserResponseDTO>> getUsersByUserType(@PathVariable String userType);
 
-    private UserResponseDTO convertToDTO(User user) {
-        return new UserResponseDTO(
-                user.getIdUser(),
-                user.getEmail(),
-                user.getUsername(),
-                user.getUserType(),
-                user.getAge(),
-                user.getCurrentStudyLevel(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
-    }
+    @Operation(summary = "Get users by enabled status")
+    @GetMapping("/enabled/{enabled}")
+    ResponseEntity<List<UserResponseDTO>> getUsersByEnabled(@PathVariable boolean enabled);
+
+    @Operation(summary = "Get users by age range")
+    @GetMapping("/age")
+    ResponseEntity<List<UserResponseDTO>> getUsersByAgeBetween(
+            @RequestParam Integer minAge,
+            @RequestParam Integer maxAge);
+
+    @Operation(summary = "Get users by current study level")
+    @GetMapping("/study-level/{currentStudyLevel}")
+    ResponseEntity<List<UserResponseDTO>> getUsersByCurrentStudyLevel(@PathVariable String currentStudyLevel);
+
+    @Operation(summary = "Enable a user")
+    @PatchMapping("/{idUser}/enable")
+    ResponseEntity<Void> enableUser(@PathVariable Long idUser);
+
+    @Operation(summary = "Disable a user")
+    @PatchMapping("/{idUser}/disable")
+    ResponseEntity<Void> disableUser(@PathVariable Long idUser);
+
+    @Operation(summary = "Check if user exists by email")
+    @GetMapping("/exists/email/{email}")
+    ResponseEntity<Boolean> existsByEmail(@PathVariable String email);
+
+    @Operation(summary = "Check if user exists by username")
+    @GetMapping("/exists/username/{username}")
+    ResponseEntity<Boolean> existsByUsername(@PathVariable String username);
 }

@@ -51,7 +51,7 @@ public class EmailService {
         // Send email
         String verificationUrl = baseUrl + "/api/auth/verify-email?token=" + token;
         String subject = "Email Verification";
-        String message = "Hello " + user.getName() + ",\n\n" +
+        String message = "Hello " + user.getUsername() + ",\n\n" +
                 "Please click the link below to verify your email address:\n" +
                 verificationUrl + "\n\n" +
                 "This link will expire in " + (verificationExpiration / 60) + " minutes.\n\n" +

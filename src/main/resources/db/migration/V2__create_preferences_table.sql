@@ -9,7 +9,6 @@ CREATE TABLE preferences (
                              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    -- Foreign key constraint
                              CONSTRAINT fk_preferences_user
                                  FOREIGN KEY (user_id)
                                      REFERENCES `user`(id_user)

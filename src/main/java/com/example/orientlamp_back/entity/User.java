@@ -34,6 +34,9 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private boolean enabled = false;
+
     @NotBlank(message = "Username is required")
     @Size(min = 2, max = 100)
     @Column(nullable = false, unique = true)
@@ -103,6 +106,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 }

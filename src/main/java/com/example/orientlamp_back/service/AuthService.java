@@ -31,7 +31,7 @@ public class AuthService {
 
         // Create new user
         User user = User.builder()
-                .name(request.getName())
+                .username(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .enabled(false) // Disabled until email verification
@@ -50,7 +50,7 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .email(user.getEmail())
-                .name(user.getName())
+                .name(user.getUsername())
                 .message("Registration successful. Please check your email to verify your account.")
                 .build();
     }
@@ -69,7 +69,7 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Check if email is verified
-        if (!user.getEnabled()) {
+        if (!user.isEnabled()) {
             throw new RuntimeException("Email not verified. Please verify your email first.");
         }
 
@@ -81,7 +81,7 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .email(user.getEmail())
-                .name(user.getName())
+                .name(user.getUsername())
                 .message("Login successful")
                 .build();
     }
@@ -101,7 +101,7 @@ public class AuthService {
                 .accessToken(newAccessToken)
                 .refreshToken(refreshToken)
                 .email(user.getEmail())
-                .name(user.getName())
+                .name(user.getUsername())
                 .message("Token refreshed successfully")
                 .build();
     }
