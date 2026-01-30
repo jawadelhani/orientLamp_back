@@ -30,7 +30,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request, String baseUrl) {
         // Check if user already exists
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new com.example.orientlamp_back.exception.EmailAlreadyExistsException("This email already exists");
         }
 
         // Create new user
@@ -54,17 +54,14 @@ public class AuthService {
                 String token = emailService.createVerificationToken(user);
                 eventPublisher.publishEvent(new com.example.orientlamp_back.event.UserRegisteredEvent(user, token, baseUrl));
 
-        // Generate tokens (optional - you may want to wait until verification)
-        String accessToken = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-
+        // Do not generate tokens at registration. Require email verification first.
         return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .email(user.getEmail())
-                .name(user.getFirstName() + " " + user.getLastName())
-                .message("Registration successful. Please check your email to verify your account.")
-                .build();
+            .accessToken(null)
+            .refreshToken(null)
+            .email(user.getEmail())
+            .name(user.getFirstName() + " " + user.getLastName())
+            .message("Registration successful. Please check your email to verify your account.")
+            .build();
     }
 
     public AuthResponse login(AuthRequest request) {
