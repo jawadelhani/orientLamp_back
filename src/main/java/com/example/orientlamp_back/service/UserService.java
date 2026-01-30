@@ -2,6 +2,7 @@ package com.example.orientlamp_back.service;
 
 import com.example.orientlamp_back.dto.UserRequestDTO;
 import com.example.orientlamp_back.dto.UserResponseDTO;
+import com.example.orientlamp_back.entity.CurrentStudyLevel;
 
 import java.util.List;
 
@@ -17,11 +18,9 @@ public interface UserService {
 
     UserResponseDTO getUserByEmail(String email);
 
-    UserResponseDTO getUserByUsername(String username);
 
     List<UserResponseDTO> getAllUsers();
 
-    List<UserResponseDTO> getUsersByUserType(String userType);
 
     List<UserResponseDTO> getUsersByEnabled(boolean enabled);
 
@@ -35,5 +34,4 @@ public interface UserService {
 
     boolean existsByEmail(String email);
 
-    boolean existsByUsername(String username);
 }

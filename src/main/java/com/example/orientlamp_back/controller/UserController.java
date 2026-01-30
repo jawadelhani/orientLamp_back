@@ -36,17 +36,12 @@ public interface UserController {
     @GetMapping("/email/{email}")
     ResponseEntity<UserResponseDTO> getUserByEmail(@PathVariable String email);
 
-    @Operation(summary = "Get user by username")
-    @GetMapping("/username/{username}")
-    ResponseEntity<UserResponseDTO> getUserByUsername(@PathVariable String username);
+
 
     @Operation(summary = "Get all users")
     @GetMapping
     ResponseEntity<List<UserResponseDTO>> getAllUsers();
 
-    @Operation(summary = "Get users by user type")
-    @GetMapping("/type/{userType}")
-    ResponseEntity<List<UserResponseDTO>> getUsersByUserType(@PathVariable String userType);
 
     @Operation(summary = "Get users by enabled status")
     @GetMapping("/enabled/{enabled}")
@@ -60,7 +55,7 @@ public interface UserController {
 
     @Operation(summary = "Get users by current study level")
     @GetMapping("/study-level/{currentStudyLevel}")
-    ResponseEntity<List<UserResponseDTO>> getUsersByCurrentStudyLevel(@PathVariable String currentStudyLevel);
+        ResponseEntity<List<UserResponseDTO>> getUsersByCurrentStudyLevel(@PathVariable String currentStudyLevel);
 
     @Operation(summary = "Enable a user")
     @PatchMapping("/{idUser}/enable")
@@ -74,7 +69,5 @@ public interface UserController {
     @GetMapping("/exists/email/{email}")
     ResponseEntity<Boolean> existsByEmail(@PathVariable String email);
 
-    @Operation(summary = "Check if user exists by username")
-    @GetMapping("/exists/username/{username}")
-    ResponseEntity<Boolean> existsByUsername(@PathVariable String username);
+
 }

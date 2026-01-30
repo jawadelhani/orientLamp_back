@@ -22,9 +22,9 @@ public class UserMapper {
 
         return User.builder()
                 .email(dto.getEmail())
-                .username(dto.getUsername())
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .userType(dto.getUserType())
                 .age(dto.getAge())
                 .currentStudyLevel(dto.getCurrentStudyLevel())
                 .enabled(false)
@@ -40,8 +40,8 @@ public class UserMapper {
                 .idUser(entity.getIdUser())
                 .email(entity.getEmail())
                 .enabled(entity.isEnabled())
-                .username(entity.getUsername())
-                .userType(entity.getUserType())
+                .firstName(entity.getFirstName())
+                .lastName(entity.getLastName())
                 .age(entity.getAge())
                 .currentStudyLevel(entity.getCurrentStudyLevel())
                 .createdAt(entity.getCreatedAt())
@@ -55,11 +55,11 @@ public class UserMapper {
         }
 
         entity.setEmail(dto.getEmail());
-        entity.setUsername(dto.getUsername());
+        entity.setFirstName(dto.getFirstName());
+        entity.setLastName(dto.getLastName());
         if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
             entity.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
-        entity.setUserType(dto.getUserType());
         entity.setAge(dto.getAge());
         entity.setCurrentStudyLevel(dto.getCurrentStudyLevel());
     }

@@ -1,17 +1,20 @@
 package com.example.orientlamp_back.service;
 
 
-import com.example.orientlamp_back.dto.AuthRequest;
-import com.example.orientlamp_back.dto.AuthResponse;
-import com.example.orientlamp_back.dto.RegisterRequest;
-import com.example.orientlamp_back.entity.User;
-import com.example.orientlamp_back.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
+
+import com.example.orientlamp_back.dto.AuthRequest;
+import com.example.orientlamp_back.dto.AuthResponse;
+import com.example.orientlamp_back.dto.RegisterRequest;
+import com.example.orientlamp_back.entity.User;
+import com.example.orientlamp_back.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public AuthResponse register(RegisterRequest request, String baseUrl) {
@@ -31,16 +35,24 @@ public class AuthService {
 
         // Create new user
         User user = User.builder()
-                .username(request.getName())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .enabled(false) // Disabled until email verification
                 .build();
 
-        userRepository.save(user);
 
-        // Send verification email
-        emailService.sendVerificationEmail(user, baseUrl);
+                // Set current study level if provided
+                if (request.getCurrentStudyLevel() != null) {
+                    user.setCurrentStudyLevel(request.getCurrentStudyLevel());
+                }
+
+                userRepository.save(user);
+
+                // Create verification token and publish event AFTER COMMIT to send email
+                String token = emailService.createVerificationToken(user);
+                eventPublisher.publishEvent(new com.example.orientlamp_back.event.UserRegisteredEvent(user, token, baseUrl));
 
         // Generate tokens (optional - you may want to wait until verification)
         String accessToken = jwtService.generateToken(user);
@@ -50,7 +62,7 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .email(user.getEmail())
-                .name(user.getUsername())
+                .name(user.getFirstName() + " " + user.getLastName())
                 .message("Registration successful. Please check your email to verify your account.")
                 .build();
     }
@@ -81,7 +93,7 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .email(user.getEmail())
-                .name(user.getUsername())
+                .name(user.getFirstName() + " " + user.getLastName())
                 .message("Login successful")
                 .build();
     }
@@ -101,7 +113,7 @@ public class AuthService {
                 .accessToken(newAccessToken)
                 .refreshToken(refreshToken)
                 .email(user.getEmail())
-                .name(user.getUsername())
+                .name(user.getFirstName() + " " + user.getLastName())
                 .message("Token refreshed successfully")
                 .build();
     }

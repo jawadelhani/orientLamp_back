@@ -3,6 +3,7 @@ package com.example.orientlamp_back.controller.impl;
 import com.example.orientlamp_back.controller.UserController;
 import com.example.orientlamp_back.dto.UserRequestDTO;
 import com.example.orientlamp_back.dto.UserResponseDTO;
+import com.example.orientlamp_back.entity.CurrentStudyLevel;
 import com.example.orientlamp_back.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,12 +55,6 @@ public class UserControllerImpl implements UserController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @Override
-    public ResponseEntity<UserResponseDTO> getUserByUsername(String username) {
-        log.info("REST request to get User with username: {}", username);
-        UserResponseDTO responseDTO = userService.getUserByUsername(username);
-        return ResponseEntity.ok(responseDTO);
-    }
 
     @Override
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
@@ -68,12 +63,6 @@ public class UserControllerImpl implements UserController {
         return ResponseEntity.ok(users);
     }
 
-    @Override
-    public ResponseEntity<List<UserResponseDTO>> getUsersByUserType(String userType) {
-        log.info("REST request to get Users by type: {}", userType);
-        List<UserResponseDTO> users = userService.getUsersByUserType(userType);
-        return ResponseEntity.ok(users);
-    }
 
     @Override
     public ResponseEntity<List<UserResponseDTO>> getUsersByEnabled(boolean enabled) {
@@ -92,7 +81,9 @@ public class UserControllerImpl implements UserController {
     @Override
     public ResponseEntity<List<UserResponseDTO>> getUsersByCurrentStudyLevel(String currentStudyLevel) {
         log.info("REST request to get Users by study level: {}", currentStudyLevel);
-        List<UserResponseDTO> users = userService.getUsersByCurrentStudyLevel(currentStudyLevel);
+        // Convert incoming path variable to enum and delegate to service
+        CurrentStudyLevel level = CurrentStudyLevel.valueOf(currentStudyLevel);
+        List<UserResponseDTO> users = userService.getUsersByCurrentStudyLevel(level.toString());
         return ResponseEntity.ok(users);
     }
 
@@ -117,10 +108,4 @@ public class UserControllerImpl implements UserController {
         return ResponseEntity.ok(exists);
     }
 
-    @Override
-    public ResponseEntity<Boolean> existsByUsername(String username) {
-        log.info("REST request to check if User exists by username: {}", username);
-        boolean exists = userService.existsByUsername(username);
-        return ResponseEntity.ok(exists);
-    }
 }

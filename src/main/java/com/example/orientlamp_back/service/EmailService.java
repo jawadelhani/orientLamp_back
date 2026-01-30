@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -33,10 +34,15 @@ public class EmailService {
 
     @Transactional
     public void sendVerificationEmail(User user, String baseUrl) {
-        // Generate token
+        // Backwards-compatible helper: create token + send
+        String token = createVerificationToken(user);
+        sendVerificationEmailUsingToken(user, token, baseUrl);
+    }
+
+    @Transactional
+    public String createVerificationToken(User user) {
         String token = UUID.randomUUID().toString();
 
-        // Save token to database
         EmailVerificationToken verificationToken = EmailVerificationToken.builder()
                 .token(token)
                 .user(user)
@@ -44,21 +50,28 @@ public class EmailService {
                 .build();
         tokenRepository.save(verificationToken);
 
-        // Store in Redis with expiration
         String redisKey = "email_verification:" + token;
         redisTemplate.opsForValue().set(redisKey, user.getEmail(), verificationExpiration, TimeUnit.SECONDS);
 
-        // Send email
+        return token;
+    }
+
+    public void sendVerificationEmailUsingToken(User user, String token, String baseUrl) {
         String verificationUrl = baseUrl + "/api/auth/verify-email?token=" + token;
         String subject = "Email Verification";
-        String message = "Hello " + user.getUsername() + ",\n\n" +
+        String message = "Hello " + (user.getFirstName() != null ? user.getFirstName() : "user") + ",\n\n" +
                 "Please click the link below to verify your email address:\n" +
                 verificationUrl + "\n\n" +
                 "This link will expire in " + (verificationExpiration / 60) + " minutes.\n\n" +
                 "If you didn't create an account, please ignore this email.";
 
-        sendEmail(user.getEmail(), subject, message);
-        log.info("Verification email sent to: {}", user.getEmail());
+        try {
+            sendEmail(user.getEmail(), subject, message);
+            log.info("Verification email sent to: {}", user.getEmail());
+        } catch (MailException ex) {
+            log.warn("Failed to send verification email to {}: {}", user.getEmail(), ex.getMessage());
+            // Do not propagate exception - email delivery failure should not break registration flow
+        }
     }
 
     @Transactional
@@ -108,7 +121,12 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(text);
 
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (MailException ex) {
+            log.warn("Mail send failed to {}: {}", to, ex.getMessage());
+            // swallow - caller should decide how to handle
+        }
     }
 
     @Transactional

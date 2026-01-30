@@ -1,5 +1,6 @@
 package com.example.orientlamp_back.dto;
 
+import com.example.orientlamp_back.entity.CurrentStudyLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,10 +17,10 @@ public class UserResponseDTO {
     private Long idUser;
     private String email;
     private boolean enabled;
-    private String username;
-    private String userType;
+    private String firstName;
+    private String lastName;
     private Integer age;
-    private String currentStudyLevel;
+    private CurrentStudyLevel currentStudyLevel;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

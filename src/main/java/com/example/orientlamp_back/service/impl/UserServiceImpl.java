@@ -2,6 +2,7 @@ package com.example.orientlamp_back.service.impl;
 
 import com.example.orientlamp_back.dto.UserRequestDTO;
 import com.example.orientlamp_back.dto.UserResponseDTO;
+import com.example.orientlamp_back.entity.CurrentStudyLevel;
 import com.example.orientlamp_back.entity.User;
 import com.example.orientlamp_back.mapper.UserMapper;
 import com.example.orientlamp_back.repository.UserRepository;
@@ -30,11 +31,6 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(requestDTO.getEmail())) {
             throw new RuntimeException("User with email " + requestDTO.getEmail() + " already exists");
         }
-
-        if (userRepository.existsByUsername(requestDTO.getUsername())) {
-            throw new RuntimeException("User with username " + requestDTO.getUsername() + " already exists");
-        }
-
         User user = userMapper.toEntity(requestDTO);
         User savedUser = userRepository.save(user);
 
@@ -53,12 +49,6 @@ public class UserServiceImpl implements UserService {
                 userRepository.existsByEmail(requestDTO.getEmail())) {
             throw new RuntimeException("User with email " + requestDTO.getEmail() + " already exists");
         }
-
-        if (!user.getUsername().equals(requestDTO.getUsername()) &&
-                userRepository.existsByUsername(requestDTO.getUsername())) {
-            throw new RuntimeException("User with username " + requestDTO.getUsername() + " already exists");
-        }
-
         userMapper.updateEntityFromDTO(requestDTO, user);
         User updatedUser = userRepository.save(user);
 
@@ -102,17 +92,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponseDTO getUserByUsername(String username) {
-        log.info("Fetching user with username: {}", username);
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
-
-        return userMapper.toDTO(user);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<UserResponseDTO> getAllUsers() {
         log.info("Fetching all users");
 
@@ -121,15 +100,6 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserResponseDTO> getUsersByUserType(String userType) {
-        log.info("Fetching users by user type: {}", userType);
-
-        return userRepository.findByUserType(userType).stream()
-                .map(userMapper::toDTO)
-                .collect(Collectors.toList());
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -155,10 +125,11 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<UserResponseDTO> getUsersByCurrentStudyLevel(String currentStudyLevel) {
         log.info("Fetching users by current study level: {}", currentStudyLevel);
-
-        return userRepository.findByCurrentStudyLevel(currentStudyLevel).stream()
-                .map(userMapper::toDTO)
-                .collect(Collectors.toList());
+        // Delegate to repository using enum type
+        CurrentStudyLevel level = CurrentStudyLevel.valueOf(currentStudyLevel);
+        return userRepository.findByCurrentStudyLevel(level).stream()
+            .map(userMapper::toDTO)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -193,9 +164,4 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByEmail(email);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
 }

@@ -37,25 +37,27 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean enabled = false;
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 2, max = 100)
-    @Column(nullable = false, unique = true)
-    private String username;
+    @NotBlank(message = "First name is required")
+    @Size(min = 1, max = 100)
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    @Size(min = 1, max = 100)
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     @Column(nullable = false)
     private String password;
 
-    @NotBlank(message = "User type is required")
-    @Column(name = "user_type", nullable = false, length = 50)
-    private String userType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "current_study_level", length = 50)
+    private CurrentStudyLevel currentStudyLevel;
 
     @Column(name = "age")
     private Integer age;
-
-    @Column(name = "current_study_level", length = 100)
-    private String currentStudyLevel;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -81,7 +83,7 @@ public class User implements UserDetails {
     // UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + userType.toUpperCase()));
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
