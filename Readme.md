@@ -1,3 +1,134 @@
+# orientLamp Back — Run with Docker Compose
+
+This document explains how to run the backend locally using Docker Compose, from creating a local `.env` to testing authentication endpoints with Postman.
+
+**Prerequisites**
+- Docker Desktop (with Docker Compose v2)
+- PowerShell (Windows) — commands use PowerShell syntax
+- A copy of this repository
+
+**1) Prepare configuration**
+1. In `orientLamp_back` copy the example file:
+
+```powershell
+cd path\to\orientLamp_back
+copy .env.example .env
+```
+
+2. Edit `.env` and set values for:
+- `MYSQL_ROOT_PASSWORD` — local MySQL root password
+- `MYSQL_DATABASE` — database name (default in example: `orientlamp_db`)
+- `SPRING_MAIL_USERNAME` and `SPRING_MAIL_PASSWORD` — SMTP credentials (use MailHog for local dev by leaving these blank and using the bundled MailHog service, or provide real SMTP creds for external delivery)
+- `JWT_SECRET` — a long random secret for signing tokens
+- `EMAIL_VERIFICATION_FROM` — the sender address for verification emails
+
+Important: do NOT commit your `.env` file. The repo includes `.env.example` for guidance and `.env` is in `.gitignore`.
+
+**2) Start services with Docker Compose**
+From the `orientLamp_back` folder run:
+
+```powershell
+# build images and start containers in detached mode
+docker compose up --build -d
+
+# follow backend logs (optional)
+docker compose logs -f app
+```
+
+Services started by `docker-compose.yml` include:
+- `db` (MySQL)
+- `redis`
+- `mailhog` (dev SMTP + UI on http://localhost:8025)
+- `app` (the Spring Boot backend on http://localhost:8080)
+
+If you prefer to run in the foreground for debugging, omit `-d`.
+
+**3) Verify the app is running**
+- Open: http://localhost:8080/api/auth/test — should return a simple health message from the auth service.
+- If using MailHog, open http://localhost:8025 to view captured outgoing emails.
+
+**4) Test authentication with Postman**
+Use these example requests. Replace `localhost:8080` if you mapped a different port.
+
+- Register (creates user and sends verification email)
+
+Method: POST
+URL: http://localhost:8080/api/auth/register
+Headers: `Content-Type: application/json`
+Body (JSON example):
+
+```json
+{
+  "email": "alice@example.com",
+  "password": "StrongP@ssw0rd",
+  "firstName": "Alice",
+  "lastName": "Doe",
+  "currentStudyLevel": "HIGH_SCHOOL"
+}
+```
+
+- Check Mail (MailHog)
+  - If using MailHog, open http://localhost:8025 and find the verification email.
+  - The verification link points to `/api/auth/verify-email?token=...`.
+
+- Verify email
+
+Method: GET
+URL: http://localhost:8080/api/auth/verify-email?token=<TOKEN_FROM_EMAIL>
+
+- Login
+
+Method: POST
+URL: http://localhost:8080/api/auth/login
+Headers: `Content-Type: application/json`
+Body (JSON example):
+
+```json
+{
+  "email": "alice@example.com",
+  "password": "StrongP@ssw0rd"
+}
+```
+
+Response contains `accessToken` and `refreshToken` (JWTs).
+
+- Call a protected endpoint
+
+Method: GET
+URL: http://localhost:8080/api/auth/test
+Headers:
+  - `Authorization: Bearer <accessToken>`
+
+- Refresh token
+
+Method: POST
+URL: http://localhost:8080/api/auth/refresh
+Headers: `Content-Type: application/json`
+Body (JSON example):
+
+```json
+{
+  "refreshToken": "<REFRESH_TOKEN_FROM_LOGIN_RESPONSE>"
+}
+```
+
+**5) Notes & troubleshooting**
+- If registration fails with an email error and you are using real SMTP, check `SPRING_MAIL_USERNAME` / `SPRING_MAIL_PASSWORD` in `.env`. For Gmail SMTP you may need an app password and correct TLS settings.
+- If you prefer not to provide SMTP creds, use the bundled MailHog: SMTP server is available at the `mailhog` service and the web UI is at `http://localhost:8025`.
+- If the app cannot connect to MySQL, check `MYSQL_ROOT_PASSWORD` and that the `db` container started successfully (`docker compose ps`).
+- Logs: `docker compose logs -f app` and `docker compose logs -f db` are helpful.
+
+**6) Stop and remove containers**
+
+```powershell
+# stop and remove containers, networks, volumes created by compose
+docker compose down --volumes
+```
+
+If you want to rebuild after code changes, run `docker compose up --build -d` again.
+
+---
+If you'd like, I can also add a short `Makefile` or PowerShell script for these commands, or create a GitHub Actions workflow that builds and publishes the Docker image. Want me to add one of those?
 # 🔐 JWT Authentication Service
 
 Spring Boot backend with JWT authentication, email verification (Redis), and PostgreSQL.
