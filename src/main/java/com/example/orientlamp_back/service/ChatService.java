@@ -1,20 +1,24 @@
 package com.example.orientlamp_back.service;
 
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import com.example.orientlamp_back.dto.ChatRequestDTO;
 import com.example.orientlamp_back.dto.ChatResponseDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -104,7 +108,7 @@ public class ChatService {
     private ChatResponseDTO callGroq(ChatRequestDTO request) throws Exception {
         ObjectNode body = objectMapper.createObjectNode();
         body.put("model", GROQ_MODEL);
-        body.put("max_tokens", 1024);
+        body.put("max_tokens", 4096);
         body.put("temperature", 0.75);
 
         ArrayNode messages = objectMapper.createArrayNode();
@@ -209,7 +213,7 @@ public class ChatService {
 
         // Generation config
         ObjectNode genConfig = objectMapper.createObjectNode();
-        genConfig.put("maxOutputTokens", 1024);
+        genConfig.put("maxOutputTokens", 4096);
         genConfig.put("temperature", 0.75);
         genConfig.put("topP", 0.95);
         body.set("generationConfig", genConfig);
