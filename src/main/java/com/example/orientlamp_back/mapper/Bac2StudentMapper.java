@@ -18,7 +18,6 @@ public class Bac2StudentMapper {
         }
 
         return Bac2Student.builder()
-                .idUser(dto.getIdUser())
                 .user(user)
                 .diplomaType(dto.getDiplomaType())
                 .bacMajor(dto.getBacMajor())

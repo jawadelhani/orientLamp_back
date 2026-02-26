@@ -1,5 +1,6 @@
 package com.example.orientlamp_back.service;
 
+import com.example.orientlamp_back.dto.UserBasicUpdateDTO;
 import com.example.orientlamp_back.dto.UserRequestDTO;
 import com.example.orientlamp_back.dto.UserResponseDTO;
 import com.example.orientlamp_back.entity.CurrentStudyLevel;
@@ -11,6 +12,8 @@ public interface UserService {
     UserResponseDTO createUser(UserRequestDTO requestDTO);
 
     UserResponseDTO updateUser(Long idUser, UserRequestDTO requestDTO);
+
+    UserResponseDTO updateUserBasic(Long idUser, UserBasicUpdateDTO dto);
 
     void deleteUser(Long idUser);
 

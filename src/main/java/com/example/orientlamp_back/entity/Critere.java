@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -49,8 +48,7 @@ public class Critere {
     @Column(name = "note_concours_ecrit", precision = 5, scale = 2)
     private BigDecimal noteConcoursEcrit;
 
-    @ColumnDefault("0")
-    @Column(name = "a_entretien")
+    @Column(name = "a_entretien", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean aEntretien;
 
     @Column(name = "age_max")
@@ -74,11 +72,9 @@ public class Critere {
     @Column(name = "notes_semestres")
     private String notesSemestres;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updated_at")
     private Instant updatedAt;
 

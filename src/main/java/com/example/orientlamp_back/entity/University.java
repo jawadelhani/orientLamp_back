@@ -41,7 +41,7 @@ public class University {
     private String type;
 
     @Lob
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Size(max = 255)
@@ -62,8 +62,28 @@ public class University {
     private String accreditationStatus;
 
     @Lob
-    @Column(name = "programs")
+    @Column(name = "programs", columnDefinition = "TEXT")
     private String programs;
+
+    @Size(max = 512)
+    @Column(name = "image_url", length = 512)
+    private String imageUrl;
+
+    @Size(max = 100)
+    @Column(name = "slug", length = 100, unique = true)
+    private String slug;
+
+    @Size(max = 512)
+    @Column(name = "header_image_url", length = 512)
+    private String headerImageUrl;
+
+    @Size(max = 512)
+    @Column(name = "earth_view_url", length = 512)
+    private String earthViewUrl;
+
+    @Lob
+    @Column(name = "gallery_images", columnDefinition = "TEXT")
+    private String galleryImages;
 
 
     @Column(name = "created_at")

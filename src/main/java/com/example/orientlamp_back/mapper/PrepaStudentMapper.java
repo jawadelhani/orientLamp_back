@@ -15,9 +15,9 @@ public class PrepaStudentMapper {
         }
 
         return PrepaStudent.builder()
-                .idUser(dto.getIdUser())
                 .user(user)
                 .prepaMajor(dto.getPrepaMajor())
+                .bacMajor(dto.getBacMajor())
                 .cncRating(dto.getCncRating())
                 .notesTrimestre(dto.getNotesTrimestre())
                 .anneeBac(dto.getAnneeBac())
@@ -34,6 +34,7 @@ public class PrepaStudentMapper {
                 .username(entity.getUser() != null ? entity.getUser().getUsername() : null)
                 .email(entity.getUser() != null ? entity.getUser().getEmail() : null)
                 .prepaMajor(entity.getPrepaMajor())
+                .bacMajor(entity.getBacMajor())
                 .cncRating(entity.getCncRating())
                 .notesTrimestre(entity.getNotesTrimestre())
                 .anneeBac(entity.getAnneeBac())
@@ -48,6 +49,7 @@ public class PrepaStudentMapper {
         }
 
         entity.setPrepaMajor(dto.getPrepaMajor());
+        entity.setBacMajor(dto.getBacMajor());
         entity.setCncRating(dto.getCncRating());
         entity.setNotesTrimestre(dto.getNotesTrimestre());
         entity.setAnneeBac(dto.getAnneeBac());

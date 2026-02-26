@@ -35,7 +35,6 @@ services:
     depends_on:
       - db
       - redis
-      - mailhog
     env_file:
       - .env
     environment:
@@ -47,15 +46,24 @@ services:
       # Redis
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_REPOSITORIES_ENABLED: "false"
 
-      # Mail (Gmail SMTP) - values provided via .env
+      # Mail (Gmail SMTP via SSL port 465) - values provided via .env
       SPRING_MAIL_HOST: smtp.gmail.com
-      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_PORT: 465
       SPRING_MAIL_USERNAME: "${SPRING_MAIL_USERNAME}"
       SPRING_MAIL_PASSWORD: "${SPRING_MAIL_PASSWORD}"
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_ENABLE: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: "smtp.gmail.com"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_CONNECTIONTIMEOUT: "10000"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_TIMEOUT: "10000"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_WRITETIMEOUT: "10000"
+
+      # Gemini AI
+      GEMINI_API_KEY: "${GEMINI_API_KEY}"
+      # Groq AI
+      GROQ_API_KEY: "${GROQ_API_KEY}"
 
       # JWT and verification (development defaults)
       JWT_SECRET: ZmFrZV9zaWduYXR1cmVfc2VjcmV0X2tleV9mb3JfZGV2
@@ -67,9 +75,16 @@ services:
       # JPA
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
+      # Upload / static assets
+      APP_UPLOAD_DIR: /app/uploads
+      # Public base URL — change to your domain in production
+      APP_BASE_URL: http://localhost:8080
+
     volumes:
       - ./logs:/app/logs
+      - uploads_data:/app/uploads
 
 volumes:
   db_data:
   redis_data:
+  uploads_data:

@@ -53,7 +53,7 @@ public class User implements UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "current_study_level", length = 50)
+    @Column(name = "current_study_level", columnDefinition = "varchar(50)")
     private CurrentStudyLevel currentStudyLevel;
 
     @Column(name = "age")

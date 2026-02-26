@@ -12,6 +12,8 @@ public interface UniversityRepository extends JpaRepository<University, Long> {
 
     Optional<University> findByName(String name);
 
+    Optional<University> findBySlug(String slug);
+
     List<University> findByLocation(String location);
 
     List<University> findByType(String type);

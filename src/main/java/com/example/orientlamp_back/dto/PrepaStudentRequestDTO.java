@@ -20,6 +20,9 @@ public class PrepaStudentRequestDTO {
     @Size(max = 100, message = "Prepa major must not exceed 100 characters")
     private String prepaMajor;
 
+    @Size(max = 100, message = "Bac major must not exceed 100 characters")
+    private String bacMajor;
+
     @DecimalMin(value = "0.0", message = "CNC rating must be at least 0")
     private BigDecimal cncRating;
 

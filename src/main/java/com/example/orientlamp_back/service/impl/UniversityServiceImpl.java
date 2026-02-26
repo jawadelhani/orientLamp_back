@@ -5,11 +5,13 @@ import com.example.orientlamp_back.dto.UniversityResponseDTO;
 import com.example.orientlamp_back.entity.University;
 import com.example.orientlamp_back.mapper.UniversityMapper;
 import com.example.orientlamp_back.repository.UniversityRepository;
+import com.example.orientlamp_back.service.FileStorageService;
 import com.example.orientlamp_back.service.UniversityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ public class UniversityServiceImpl implements UniversityService {
 
     private final UniversityRepository universityRepository;
     private final UniversityMapper universityMapper;
+    private final FileStorageService fileStorageService;
 
     @Override
     public UniversityResponseDTO createUniversity(UniversityRequestDTO requestDTO) {
@@ -82,6 +85,15 @@ public class UniversityServiceImpl implements UniversityService {
 
     @Override
     @Transactional(readOnly = true)
+    public UniversityResponseDTO getUniversityBySlug(String slug) {
+        log.info("Fetching university with slug: {}", slug);
+        University university = universityRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("University not found with slug: " + slug));
+        return universityMapper.toDTO(university);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<UniversityResponseDTO> getAllUniversities() {
         log.info("Fetching all universities");
 
@@ -124,5 +136,23 @@ public class UniversityServiceImpl implements UniversityService {
     @Transactional(readOnly = true)
     public boolean existsByName(String name) {
         return universityRepository.existsByName(name);
+    }
+
+    @Override
+    public UniversityResponseDTO uploadImage(Long id, MultipartFile file) {
+        log.info("Uploading image for university with ID: {}", id);
+        University university = universityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("University not found with id: " + id));
+
+        // Delete the old image if it was stored locally
+        if (university.getImageUrl() != null) {
+            fileStorageService.deleteByUrl(university.getImageUrl());
+        }
+
+        String imageUrl = fileStorageService.storeUniversityImage(file, id);
+        university.setImageUrl(imageUrl);
+        University saved = universityRepository.save(university);
+        log.info("Image uploaded successfully for university ID: {}", id);
+        return universityMapper.toDTO(saved);
     }
 }

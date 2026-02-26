@@ -5,8 +5,10 @@ import com.example.orientlamp_back.dto.UniversityResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,6 +34,10 @@ public interface UniversityController {
     @GetMapping("/{id}")
     ResponseEntity<UniversityResponseDTO> getUniversityById(@PathVariable Long id);
 
+    @Operation(summary = "Get university by slug")
+    @GetMapping("/slug/{slug}")
+    ResponseEntity<UniversityResponseDTO> getUniversityBySlug(@PathVariable String slug);
+
     @Operation(summary = "Get all universities")
     @GetMapping
     ResponseEntity<List<UniversityResponseDTO>> getAllUniversities();
@@ -51,4 +57,10 @@ public interface UniversityController {
     @Operation(summary = "Check if university exists by name")
     @GetMapping("/exists/{name}")
     ResponseEntity<Boolean> existsByName(@PathVariable String name);
+
+    @Operation(summary = "Upload or replace the image/logo for a university")
+    @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<UniversityResponseDTO> uploadImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file);
 }

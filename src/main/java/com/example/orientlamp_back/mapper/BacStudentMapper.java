@@ -15,7 +15,6 @@ public class BacStudentMapper {
         }
 
         return BacStudent.builder()
-                .idUser(dto.getIdUser())
                 .user(user)
                 .bacMajor(dto.getBacMajor())
                 .bacDegree(dto.getBacDegree())

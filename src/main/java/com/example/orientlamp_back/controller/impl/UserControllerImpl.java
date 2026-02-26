@@ -1,6 +1,7 @@
 package com.example.orientlamp_back.controller.impl;
 
 import com.example.orientlamp_back.controller.UserController;
+import com.example.orientlamp_back.dto.UserBasicUpdateDTO;
 import com.example.orientlamp_back.dto.UserRequestDTO;
 import com.example.orientlamp_back.dto.UserResponseDTO;
 import com.example.orientlamp_back.entity.CurrentStudyLevel;
@@ -106,6 +107,13 @@ public class UserControllerImpl implements UserController {
         log.info("REST request to check if User exists by email: {}", email);
         boolean exists = userService.existsByEmail(email);
         return ResponseEntity.ok(exists);
+    }
+
+    @Override
+    public ResponseEntity<UserResponseDTO> updateUserBasic(Long idUser, UserBasicUpdateDTO dto) {
+        log.info("REST request to update basic info for User with ID: {}", idUser);
+        UserResponseDTO responseDTO = userService.updateUserBasic(idUser, dto);
+        return ResponseEntity.ok(responseDTO);
     }
 
 }

@@ -18,6 +18,7 @@ public class PrepaStudentResponseDTO {
     private String username;
     private String email;
     private String prepaMajor;
+    private String bacMajor;
     private BigDecimal cncRating;
     private String notesTrimestre;
     private String anneeBac;

@@ -24,6 +24,11 @@ public class UniversityResponseDTO {
     private String phone;
     private String accreditationStatus;
     private String programs;
+    private String imageUrl;
+    private String slug;
+    private String headerImageUrl;
+    private String earthViewUrl;
+    private String galleryImages;
     private Instant createdAt;
     private Instant updatedAt;
     private List<FiliereResponseDTO> filieres;

@@ -69,8 +69,8 @@ public class EmailService {
             sendEmail(user.getEmail(), subject, message);
             log.info("Verification email sent to: {}", user.getEmail());
         } catch (MailException ex) {
-            log.warn("Failed to send verification email to {}: {}", user.getEmail(), ex.getMessage());
-            // Do not propagate exception - email delivery failure should not break registration flow
+            log.error("Failed to send verification email to {}: {}", user.getEmail(), ex.getMessage());
+            throw ex; // propagate so registration returns a proper error
         }
     }
 
@@ -121,12 +121,7 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(text);
 
-        try {
-            mailSender.send(message);
-        } catch (MailException ex) {
-            log.warn("Mail send failed to {}: {}", to, ex.getMessage());
-            // swallow - caller should decide how to handle
-        }
+        mailSender.send(message); // let MailException propagate to caller
     }
 
     @Transactional

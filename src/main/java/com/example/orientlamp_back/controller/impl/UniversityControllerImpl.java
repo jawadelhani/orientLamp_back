@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -48,6 +49,13 @@ public class UniversityControllerImpl implements UniversityController {
     }
 
     @Override
+    public ResponseEntity<UniversityResponseDTO> getUniversityBySlug(String slug) {
+        log.info("REST request to get University with slug: {}", slug);
+        UniversityResponseDTO responseDTO = universityService.getUniversityBySlug(slug);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @Override
     public ResponseEntity<List<UniversityResponseDTO>> getAllUniversities() {
         log.info("REST request to get all Universities");
         List<UniversityResponseDTO> universities = universityService.getAllUniversities();
@@ -80,5 +88,12 @@ public class UniversityControllerImpl implements UniversityController {
         log.info("REST request to check if University exists by name: {}", name);
         boolean exists = universityService.existsByName(name);
         return ResponseEntity.ok(exists);
+    }
+
+    @Override
+    public ResponseEntity<UniversityResponseDTO> uploadImage(Long id, MultipartFile file) {
+        log.info("REST request to upload image for University ID: {}", id);
+        UniversityResponseDTO responseDTO = universityService.uploadImage(id, file);
+        return ResponseEntity.ok(responseDTO);
     }
 }

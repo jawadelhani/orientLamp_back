@@ -1,5 +1,6 @@
 package com.example.orientlamp_back.controller;
 
+import com.example.orientlamp_back.dto.UserBasicUpdateDTO;
 import com.example.orientlamp_back.dto.UserRequestDTO;
 import com.example.orientlamp_back.dto.UserResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,5 +70,10 @@ public interface UserController {
     @GetMapping("/exists/email/{email}")
     ResponseEntity<Boolean> existsByEmail(@PathVariable String email);
 
+    @Operation(summary = "Update basic user information (firstName, lastName, age)")
+    @PatchMapping("/{idUser}/basic")
+    ResponseEntity<UserResponseDTO> updateUserBasic(
+            @PathVariable Long idUser,
+            @RequestBody UserBasicUpdateDTO dto);
 
 }

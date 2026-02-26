@@ -67,9 +67,8 @@ public class Filiere {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    // Relationship with Critere (One-to-One)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", referencedColumnName = "filiere_id")
+    // Relationship with Critere (One-to-One, inverse side - Critere owns the FK)
+    @OneToOne(mappedBy = "filiere", fetch = FetchType.LAZY)
     private Critere critere;
 
     @PrePersist

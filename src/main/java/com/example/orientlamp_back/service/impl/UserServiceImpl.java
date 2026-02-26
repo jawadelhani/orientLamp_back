@@ -1,5 +1,6 @@
 package com.example.orientlamp_back.service.impl;
 
+import com.example.orientlamp_back.dto.UserBasicUpdateDTO;
 import com.example.orientlamp_back.dto.UserRequestDTO;
 import com.example.orientlamp_back.dto.UserResponseDTO;
 import com.example.orientlamp_back.entity.CurrentStudyLevel;
@@ -162,6 +163,28 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public UserResponseDTO updateUserBasic(Long idUser, UserBasicUpdateDTO dto) {
+        log.info("Updating basic info for user with ID: {}", idUser);
+
+        User user = userRepository.findById(idUser)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + idUser));
+
+        if (dto.getFirstName() != null && !dto.getFirstName().isBlank()) {
+            user.setFirstName(dto.getFirstName());
+        }
+        if (dto.getLastName() != null && !dto.getLastName().isBlank()) {
+            user.setLastName(dto.getLastName());
+        }
+        if (dto.getAge() != null) {
+            user.setAge(dto.getAge());
+        }
+
+        User updatedUser = userRepository.save(user);
+        log.info("User basic info updated successfully with ID: {}", updatedUser.getIdUser());
+        return userMapper.toDTO(updatedUser);
     }
 
 }

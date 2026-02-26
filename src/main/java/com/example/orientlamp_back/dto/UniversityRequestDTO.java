@@ -40,4 +40,7 @@ public class UniversityRequestDTO {
     private String accreditationStatus;
 
     private String programs;
+
+    @Size(max = 512, message = "Image URL must not exceed 512 characters")
+    private String imageUrl;
 }

@@ -32,6 +32,7 @@ public class UniversityMapper {
                 .phone(dto.getPhone())
                 .accreditationStatus(dto.getAccreditationStatus())
                 .programs(dto.getPrograms())
+                .imageUrl(dto.getImageUrl())
                 .filieres(new ArrayList<>())
                 .build();
     }
@@ -52,6 +53,11 @@ public class UniversityMapper {
                 .phone(entity.getPhone())
                 .accreditationStatus(entity.getAccreditationStatus())
                 .programs(entity.getPrograms())
+                .imageUrl(entity.getImageUrl())
+                .slug(entity.getSlug())
+                .headerImageUrl(entity.getHeaderImageUrl())
+                .earthViewUrl(entity.getEarthViewUrl())
+                .galleryImages(entity.getGalleryImages())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .filieres(entity.getFilieres() != null ?
@@ -77,6 +83,11 @@ public class UniversityMapper {
                 .phone(entity.getPhone())
                 .accreditationStatus(entity.getAccreditationStatus())
                 .programs(entity.getPrograms())
+                .imageUrl(entity.getImageUrl())
+                .slug(entity.getSlug())
+                .headerImageUrl(entity.getHeaderImageUrl())
+                .earthViewUrl(entity.getEarthViewUrl())
+                .galleryImages(entity.getGalleryImages())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();
@@ -96,5 +107,8 @@ public class UniversityMapper {
         entity.setPhone(dto.getPhone());
         entity.setAccreditationStatus(dto.getAccreditationStatus());
         entity.setPrograms(dto.getPrograms());
+        if (dto.getImageUrl() != null) {
+            entity.setImageUrl(dto.getImageUrl());
+        }
     }
 }

@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -32,6 +31,10 @@ public class PrepaStudent {
     @Column(name = "prepa_major", length = 100)
     private String prepaMajor;
 
+    @Size(max = 100)
+    @Column(name = "bac_major", length = 100)
+    private String bacMajor;
+
     @Column(name = "cnc_rating", precision = 5, scale = 2)
     private BigDecimal cncRating;
 
@@ -43,11 +46,9 @@ public class PrepaStudent {
     @Column(name = "annee_bac", length = 20)
     private String anneeBac;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updated_at")
     private Instant updatedAt;
 
